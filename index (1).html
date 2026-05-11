@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vermogensoverzicht · Persoonlijk financieel dashboard voor Nederlandse huishoudens</title>
+<meta name="description" content="Een eerlijk, lokaal, Nederlands financieel dashboard. Jaarruimte, Box 3, AOW, pensioen — alles in één bestand. Geen cloud, geen account, jouw data blijft van jou.">
+<meta property="og:title" content="Vermogensoverzicht · Persoonlijk financieel dashboard">
+<meta property="og:description" content="Eerlijk financieel dashboard voor Nederlandse huishoudens. Jaarruimte, Box 3, AOW, pensioen — één HTML bestand, lokaal, geen account.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vermogensoverzicht.com">
+
+<style>
+:root {
+  --bg: #FAFAF7;
+  --surface: #FFFFFF;
+  --surface-2: #F3F2EE;
+  --surface-3: #E8E6DF;
+  --border: #E0DDD3;
+  --border-strong: #C4C1B5;
+  --text: #1F1F1D;
+  --text-2: #5F5E5A;
+  --text-3: #888780;
+  --accent: #185FA5;
+  --accent-bg: #E6F1FB;
+  --accent-strong: #0E4A82;
+  --ok: #0F6E56;
+  --ok-bg: #E1F5EE;
+  --warn: #854F0B;
+  --warn-bg: #FAEEDA;
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1A1A18; --surface: #232321; --surface-2: #2C2C2A; --surface-3: #3A3A37;
+    --border: #3A3A37; --border-strong: #54534F; --text: #F5F4EE; --text-2: #B4B2A9; --text-3: #888780;
+    --accent: #85B7EB; --accent-bg: #0C447C; --accent-strong: #B3D4F2; --ok: #5DCAA5; --ok-bg: #085041;
+    --warn: #FAC775; --warn-bg: #633806;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Layout */
+.container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+.wide { max-width: 1180px; }
+
+/* Header */
+header {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 100;
+  backdrop-filter: blur(6px);
+}
+.header-inner { display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); text-decoration: none; }
+.logo-dot { color: var(--accent); }
+.header-actions { display: flex; gap: 14px; align-items: center; }
+.header-link { font-size: 14px; color: var(--text-2); text-decoration: none; }
+.header-link:hover { color: var(--text); }
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 11px 22px;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s;
+  font-family: inherit;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-strong); transform: translateY(-1px); }
+.btn-secondary { background: transparent; color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { background: var(--surface-2); border-color: var(--border-strong); }
+.btn-large { padding: 14px 28px; font-size: 16px; }
+
+/* Hero */
+.hero { padding: 72px 0 56px; }
+.hero h1 {
+  font-size: 44px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  max-width: 720px;
+  margin-bottom: 18px;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero-sub {
+  font-size: 19px;
+  color: var(--text-2);
+  max-width: 620px;
+  margin-bottom: 28px;
+  line-height: 1.55;
+}
+.hero-cta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.hero-meta { font-size: 13px; color: var(--text-3); display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-meta-item { display: inline-flex; align-items: center; gap: 6px; }
+.check { color: var(--ok); font-weight: 600; }
+
+@media (max-width: 720px) {
+  .hero { padding: 40px 0 36px; }
+  .hero h1 { font-size: 30px; }
+  .hero-sub { font-size: 16px; }
+}
+
+/* Preview / Screenshot */
+.preview {
+  margin: 12px 0 60px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+.preview-bar {
+  background: var(--surface-2);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.preview-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--border-strong); }
+.preview-bar-text {
+  margin-left: 14px;
+  font-size: 12px;
+  color: var(--text-3);
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+.preview-body { padding: 24px; }
+
+/* Inline mini-dashboard preview */
+.mini-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.mini-tab {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-2);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.mini-tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
+
+.mini-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.mini-kpi {
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+}
+.mini-kpi-label {
+  font-size: 10px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.mini-kpi-val {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+}
+.mini-kpi-sub {
+  font-size: 10px;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+.mini-kpi-val.ok { color: var(--ok); }
+.mini-kpi-val.warn { color: var(--warn); }
+.mini-kpi-val.info { color: var(--accent); }
+
+.mini-section-label {
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  margin: 16px 0 8px;
+}
+
+.mini-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.mini-row:last-child { border-bottom: none; }
+.mini-row-l { color: var(--text-2); }
+.mini-row-r { color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* Sections */
+section { padding: 60px 0; }
+section.tight { padding: 40px 0; }
+.section-label {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+.section-title {
+  font-size: 30px;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+  margin-bottom: 14px;
+  max-width: 640px;
+}
+.section-sub {
+  font-size: 17px;
+  color: var(--text-2);
+  margin-bottom: 32px;
+  max-width: 620px;
+  line-height: 1.55;
+}
+
+@media (max-width: 720px) {
+  section { padding: 40px 0; }
+  .section-title { font-size: 24px; }
+  .section-sub { font-size: 15px; }
+}
+
+/* Features grid */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.feature {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+}
+.feature-icon {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-radius: var(--radius);
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.feature-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.feature-desc {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+/* What's inside */
+.inside-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.inside-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.inside-item-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.inside-item-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+.inside-num {
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 500;
+  background: var(--surface-2);
+  padding: 2px 7px;
+  border-radius: 12px;
+}
+
+/* For who */
+.for-who-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 720px) {
+  .for-who-cols { grid-template-columns: 1fr; }
+}
+.for-who {
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+.for-who.yes { background: var(--ok-bg); border-color: var(--ok); }
+.for-who.no { background: var(--surface-2); }
+.for-who-title {
+  font-size: 17px;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+.for-who.yes .for-who-title { color: var(--ok); }
+.for-who li {
+  list-style: none;
+  font-size: 14px;
+  padding: 5px 0;
+  display: flex;
+  gap: 10px;
+  line-height: 1.5;
+}
+.for-who li::before {
+  flex-shrink: 0;
+  font-weight: 600;
+  width: 18px;
+}
+.for-who.yes li::before { content: "✓"; color: var(--ok); }
+.for-who.no li { color: var(--text-2); }
+.for-who.no li::before { content: "−"; color: var(--text-3); }
+
+/* Pricing */
+.pricing {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.price-num {
+  font-size: 56px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1;
+  margin: 8px 0;
+}
+.price-currency {
+  font-size: 32px;
+  vertical-align: top;
+  margin-right: 2px;
+  color: var(--text-2);
+}
+.price-meta {
+  font-size: 14px;
+  color: var(--text-2);
+  margin-bottom: 22px;
+}
+.price-includes {
+  text-align: left;
+  margin: 24px 0;
+}
+.price-includes li {
+  list-style: none;
+  font-size: 14px;
+  padding: 6px 0;
+  display: flex;
+  gap: 10px;
+  line-height: 1.5;
+}
+.price-includes li::before {
+  content: "✓";
+  color: var(--ok);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* FAQ */
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.faq-q {
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+.faq-q:hover { background: var(--surface-2); }
+.faq-arrow { color: var(--text-3); transition: transform 0.15s; font-size: 13px; }
+.faq-item.open .faq-arrow { transform: rotate(90deg); }
+.faq-a {
+  display: none;
+  padding: 0 20px 18px;
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.65;
+}
+.faq-item.open .faq-a { display: block; }
+
+/* Disclaimer */
+.disclaimer-box {
+  background: var(--warn-bg);
+  color: var(--warn);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-size: 13px;
+  line-height: 1.55;
+  border-left: 3px solid var(--warn);
+  margin: 32px 0;
+}
+.disclaimer-box strong { font-weight: 600; }
+
+/* Made by */
+.made-by {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.made-by-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.made-by-body { flex: 1; }
+.made-by-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.made-by-desc {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+/* Footer */
+footer {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-text { font-size: 12px; color: var(--text-3); }
+.footer-text a { color: var(--text-2); text-decoration: none; }
+.footer-text a:hover { color: var(--text); }
+.footer-links { display: flex; gap: 18px; }
+.footer-links a {
+  font-size: 12px;
+  color: var(--text-3);
+  text-decoration: none;
+}
+.footer-links a:hover { color: var(--text); }
+
+/* CTA section */
+.cta-final {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 48px 32px;
+  text-align: center;
+  margin: 60px 0;
+}
+.cta-final h2 {
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--accent-strong);
+  letter-spacing: -0.015em;
+}
+.cta-final p {
+  font-size: 16px;
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+@media (prefers-color-scheme: dark) {
+  .cta-final h2 { color: var(--text); }
+  .cta-final p { color: var(--text-2); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <a href="#" class="logo">Vermogensoverzicht<span class="logo-dot">.</span></a>
+      <div class="header-actions">
+        <a href="#wat" class="header-link">Wat krijg je</a>
+        <a href="#voor-wie" class="header-link">Voor wie</a>
+        <a href="#prijs" class="header-link">Prijs</a>
+        <a href="#kopen" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px;">Kopen · €29</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <h1>Eén bestand dat <span class="accent">jouw Nederlandse financiële plaatje</span> compleet maakt.</h1>
+    <p class="hero-sub">
+      Jaarruimte, Box 3, AOW, pensioenoverzicht, hypotheekrenteaftrek — het Nederlandse fiscale doolhof, vertaald naar één persoonlijk dashboard dat je begrijpt en kunt aanpassen. Lokaal in je browser, geen account, geen cloud.
+    </p>
+    <div class="hero-cta">
+      <a href="#kopen" class="btn btn-primary btn-large">Koop voor €29</a>
+      <a href="#wat" class="btn btn-secondary btn-large">Bekijk wat erin zit</a>
+    </div>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><span class="check">✓</span> Eénmalig betalen</span>
+      <span class="hero-meta-item"><span class="check">✓</span> Voor altijd van jou</span>
+      <span class="hero-meta-item"><span class="check">✓</span> Data blijft lokaal</span>
+      <span class="hero-meta-item"><span class="check">✓</span> Werkt offline</span>
+    </div>
+  </div>
+</section>
+
+<!-- PREVIEW -->
+<div class="container">
+  <div class="preview">
+    <div class="preview-bar">
+      <span class="preview-dot"></span>
+      <span class="preview-dot"></span>
+      <span class="preview-dot"></span>
+      <span class="preview-bar-text">vermogensoverzicht.html · lokaal in je browser</span>
+    </div>
+    <div class="preview-body">
+      <div class="mini-tabs">
+        <span class="mini-tab active">Overzicht</span>
+        <span class="mini-tab">Inkomsten &amp; uitgaven</span>
+        <span class="mini-tab">Vermogen</span>
+        <span class="mini-tab">Pensioen</span>
+        <span class="mini-tab">Jaarruimte</span>
+        <span class="mini-tab">Box 3</span>
+        <span class="mini-tab">Scenario's</span>
+      </div>
+
+      <div class="mini-section-label">Maandelijkse cashflow</div>
+      <div class="mini-kpi-grid">
+        <div class="mini-kpi">
+          <div class="mini-kpi-label">Inkomen</div>
+          <div class="mini-kpi-val">€7.350</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-kpi-label">Uitgaven</div>
+          <div class="mini-kpi-val">€6.420</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-kpi-label">Cash buffer</div>
+          <div class="mini-kpi-val ok">€930</div>
+          <div class="mini-kpi-sub">12,7% van inkomen</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-kpi-label">Effectieve buffer</div>
+          <div class="mini-kpi-val ok">€1.301</div>
+          <div class="mini-kpi-sub">+€371 belastingvoordeel</div>
+        </div>
+      </div>
+
+      <div class="mini-section-label">Pensioen pijler 1 + 2</div>
+      <div class="mini-kpi-grid">
+        <div class="mini-kpi">
+          <div class="mini-kpi-label">Persoon 1</div>
+          <div class="mini-kpi-val">€2.029</div>
+          <div class="mini-kpi-sub">per maand bij pensioen</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-kpi-label">Persoon 2</div>
+          <div class="mini-kpi-val">€1.542</div>
+          <div class="mini-kpi-sub">per maand bij pensioen</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-kpi-label">Huishouden</div>
+          <div class="mini-kpi-val ok">€3.571</div>
+          <div class="mini-kpi-sub">per maand · gecombineerd</div>
+        </div>
+      </div>
+
+      <div class="mini-section-label">Jaarruimte status</div>
+      <div class="mini-row">
+        <span class="mini-row-l">Geschatte jaarruimte 2025 (€170k inkomen, geen werkgeverspensioen)</span>
+        <span class="mini-row-r">€35.798/jr</span>
+      </div>
+      <div class="mini-row">
+        <span class="mini-row-l">Huidige inleg pensioenbeleggen</span>
+        <span class="mini-row-r">€9.000/jr · 25%</span>
+      </div>
+      <div class="mini-row">
+        <span class="mini-row-l">Onbenut belastingvoordeel bij 49,5% marginaal</span>
+        <span class="mini-row-r" style="color: var(--warn);">€13.265/jr</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WAAROM DIT BESTAAT -->
+<section class="tight">
+  <div class="container">
+    <div class="section-label">Waarom dit bestaat</div>
+    <h2 class="section-title">Generieke budget-apps weten niets van jaarruimte.</h2>
+    <p class="section-sub">
+      YNAB, Spendee, Mint — ze zijn allemaal gebouwd voor een Amerikaanse of generieke EU context. Ze begrijpen geen pensioenoverzicht.nl, geen Box 3 vrijstelling, geen aftoppingsgrens, geen hypotheekrenteaftrek. Voor een Nederlands huishouden met een hypotheek, pensioenpotten en spaargeld in Box 3 levert dat een gefragmenteerd beeld op. Dit dashboard is anders: het is gebouwd vanuit het Nederlandse fiscale stelsel, niet ondanks.
+    </p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="wat" style="background: var(--surface-2);">
+  <div class="container">
+    <div class="section-label">Wat erin zit</div>
+    <h2 class="section-title">11 tabs, één bestand, geen abonnement.</h2>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">€</div>
+        <div class="feature-title">Inkomsten &amp; uitgaven</div>
+        <div class="feature-desc">Nederlandse categorieën: hypotheek (na renteaftrek), gas &amp; elektra, eigen risico, opstal &amp; inboedel. Klik om te bewerken, klap categorieën uit en in.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Vermogen tracker</div>
+        <div class="feature-desc">Voeg je eigen rekeningen toe, registreer wekelijks je vrij vermogen, zie de groei over tijd via grafiek en geschiedenis.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">🏛️</div>
+        <div class="feature-title">Pensioen pijler 1 + 2</div>
+        <div class="feature-desc">AOW + werkgever-pensioenpotten voor beide partners. Inkomen op pensioenleeftijd berekend per persoon en huishouden.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">%</div>
+        <div class="feature-title">Jaarruimte calculator</div>
+        <div class="feature-desc">Berekening volgens Belastingdienst-formule, met aftoppingsgrens 2025 (€137.800) en maximum (€35.798). Toont je onbenut belastingvoordeel.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">↻</div>
+        <div class="feature-title">Belastingteruggave recyclen</div>
+        <div class="feature-desc">Strategie voor hoge inkomens: voorlopige teruggave + auto-recycling naar indexfonds. Vergelijking van scenario's met en zonder. Status-aware aanbevelingen.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">3</div>
+        <div class="feature-title">Box 3 berekening</div>
+        <div class="feature-desc">Forfaitair stelsel met vrijstelling per fiscale partner, gescheiden tarieven voor spaargeld en beleggingen, tegenbewijsregeling toelichting.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">📈</div>
+        <div class="feature-title">Scenario's met sliders</div>
+        <div class="feature-desc">Samengestelde groei: startbedrag, maandelijkse inleg, reëel rendement, jaren. Met optie om gerecyclede belastingteruggave mee te nemen.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">📋</div>
+        <div class="feature-title">Abonnementen audit</div>
+        <div class="feature-desc">Actief/opgezegd toggle, maandelijks en jaarlijks totaal, hernieuwingsdata. Zie precies waar je geld weglekt.</div>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">🛟</div>
+        <div class="feature-title">Buffer in drie niveaus</div>
+        <div class="feature-desc">Ondergrens (3 mnd), doel (5 mnd), comfort (7 mnd) — automatisch berekend uit je werkelijke uitgaven.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VOOR WIE -->
+<section id="voor-wie">
+  <div class="container">
+    <div class="section-label">Voor wie het is</div>
+    <h2 class="section-title">Eerlijk over wie hier baat bij heeft.</h2>
+    <p class="section-sub">
+      Niet iedereen heeft dit nodig. Hieronder de eerlijke check.
+    </p>
+
+    <div class="for-who-cols">
+      <div class="for-who yes">
+        <div class="for-who-title">✓ Voor jou als…</div>
+        <ul>
+          <li>Je woont in Nederland, hebt een hypotheek en een (deel)inkomen van €60k+</li>
+          <li>Je hebt al een spaarbuffer en wilt begrijpen waar je geld naartoe gaat</li>
+          <li>Je hebt of overweegt pensioenbeleggen / lijfrente, maar weet niet precies wat je jaarruimte is</li>
+          <li>Je vermogen zit boven de Box 3 vrijstelling en je wilt grip op de gevolgen</li>
+          <li>Je waardeert privacy en wilt geen account aanmaken bij een onbekend startup</li>
+          <li>Je voelt je comfortabel met een spreadsheet-achtige tool</li>
+        </ul>
+      </div>
+
+      <div class="for-who no">
+        <div class="for-who-title">Misschien niet voor jou als…</div>
+        <ul>
+          <li>Je wilt automatische bank-koppeling (PSD2 / aggregator)</li>
+          <li>Je wilt cross-device sync zonder eigen backup</li>
+          <li>Je woont buiten Nederland (de fiscale calculaties zijn NL-specifiek)</li>
+          <li>Je verwacht financieel advies — dit is een tool, geen adviseur</li>
+          <li>Je wilt een mobile-first app met notificaties</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY ANGLE -->
+<section style="background: var(--surface-2);">
+  <div class="container">
+    <div class="section-label">Privacy &amp; ownership</div>
+    <h2 class="section-title">Jouw data blijft van jou. Letterlijk.</h2>
+    <p class="section-sub">
+      Geen cloud, geen account, geen tracker, geen analytics. Het hele dashboard is één HTML-bestand dat in je browser draait. Je data wordt opgeslagen in <em>jouw</em> browser via localStorage — niet op een server bij mij of een derde partij. Je kunt op elk moment exporteren als JSON, importeren op een ander apparaat, of het hele bestand backuppen naar een USB-stick en offline gebruiken.
+    </p>
+
+    <div class="features" style="margin-top: 16px;">
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">Lokaal, niet in de cloud</div>
+        <div class="feature-desc">Geen server, geen database, geen API-call. Het bestand wordt gedownload, geopend in je browser, en draait offline.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📤</div>
+        <div class="feature-title">Exporteer alles als JSON</div>
+        <div class="feature-desc">Eén klik maakt een backup van je hele financiële plaatje. Bewaar op je eigen schijf, NAS, encrypted cloud — waar je wilt.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">Gebouwd door een cybersecurity engineer</div>
+        <div class="feature-desc">Geen tracking pixels, geen externe scripts behalve één chart-bibliotheek (Chart.js via CDN). Open de developer tools en zie zelf wat er gebeurt.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIDE DETAIL -->
+<section>
+  <div class="container">
+    <div class="section-label">Alle 11 tabs</div>
+    <h2 class="section-title">Wat je precies krijgt.</h2>
+
+    <div class="inside-grid">
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">01</span>Overzicht</div>
+        <div class="inside-item-desc">KPI dashboard — alle belangrijke getallen in één blik.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">02</span>Inkomsten &amp; uitgaven</div>
+        <div class="inside-item-desc">Categorieën, items, totalen, buffer berekening live.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">03</span>Uitgaven verdeling</div>
+        <div class="inside-item-desc">Percentages per categorie, in tabelvorm.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">04</span>Vermogen</div>
+        <div class="inside-item-desc">Wekelijkse metingen, grafiek, geschiedenis met delta's.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">05</span>Scenario's</div>
+        <div class="inside-item-desc">Compounding berekening met sliders en live grafiek.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">06</span>Pensioen</div>
+        <div class="inside-item-desc">AOW + pijler 2 pots voor twee personen.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">07</span>Jaarruimte</div>
+        <div class="inside-item-desc">Volledige Belastingdienst-formule met recycling strategie.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">08</span>Box 3</div>
+        <div class="inside-item-desc">Forfaitair stelsel + vrijstelling + tegenbewijs context.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">09</span>Abonnementen</div>
+        <div class="inside-item-desc">Audit van alle recurring kosten met opzeg-status.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">10</span>Buffer</div>
+        <div class="inside-item-desc">3 niveaus van noodbuffer, berekend uit jouw uitgaven.</div>
+      </div>
+      <div class="inside-item">
+        <div class="inside-item-title"><span class="inside-num">11</span>Actielijst</div>
+        <div class="inside-item-desc">Onboarding stappen en jouw eigen todo's, klikbaar afvinkbaar.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="prijs" style="background: var(--surface-2);" id="kopen">
+  <div class="container">
+    <div class="section-label">Prijs</div>
+    <h2 class="section-title" style="text-align: center; margin: 0 auto 32px;">Eénmalig €29.<br>Voor altijd van jou.</h2>
+
+    <div class="pricing">
+      <div class="price-num"><span class="price-currency">€</span>29</div>
+      <div class="price-meta">Eénmalig · geen abonnement · geen verborgen kosten</div>
+
+      <ul class="price-includes">
+        <li>Vermogensoverzicht.html (volledige versie, alle 11 tabs)</li>
+        <li>Levenslange toegang — eens gekocht, voor altijd van jou</li>
+        <li>Lokaal bestand, draait offline, geen account nodig</li>
+        <li>Updates gedurende 12 maanden meegeleverd</li>
+        <li>Email support via info@vermogensoverzicht.com</li>
+        <li>14 dagen geld-terug-garantie zonder vragen</li>
+      </ul>
+
+      <a href="https://vermogensoverzicht.lemonsqueezy.com/buy/PLACEHOLDER" class="btn btn-primary btn-large" style="display: block; text-align: center;">Nu kopen voor €29</a>
+      <p style="font-size: 12px; color: var(--text-3); margin-top: 14px;">Betalen via iDEAL, creditcard, of PayPal · veilige checkout via Lemon Squeezy</p>
+    </div>
+  </div>
+</section>
+
+<!-- MADE BY -->
+<section>
+  <div class="container">
+    <div class="section-label">Wie zit erachter</div>
+    <h2 class="section-title">Gebouwd voor mezelf, daarna voor jou.</h2>
+
+    <div class="made-by">
+      <div class="made-by-avatar">VO</div>
+      <div class="made-by-body">
+        <div class="made-by-title">Vermogensoverzicht is gemaakt door een Nederlandse cybersecurity engineer.</div>
+        <div class="made-by-desc">
+          Ik bouwde dit oorspronkelijk voor mijn eigen huishouden omdat geen enkele bestaande tool het Nederlandse fiscale stelsel echt begreep. Wat begon als een persoonlijke spreadsheet werd een complete dashboard. Na maanden van eigen gebruik en verfijning deel ik het nu, omdat ik denk dat andere Nederlandse huishoudens hetzelfde probleem hebben. Het is geen polished SaaS-product met VC-funding. Het is een ding dat werkt, gebouwd door iemand die het zelf gebruikt. Heb je een vraag of bug? Mail <a href="mailto:info@vermogensoverzicht.com" style="color: var(--accent);">info@vermogensoverzicht.com</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="background: var(--surface-2);">
+  <div class="container">
+    <div class="section-label">Veelgestelde vragen</div>
+    <h2 class="section-title">Wat je waarschijnlijk wilt weten.</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">Wat krijg ik precies na betaling? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Eén HTML-bestand (~95 KB) dat je downloadt en in elke moderne browser kunt openen. Het bevat alle 11 tabs, alle berekeningen, en al je data wordt lokaal opgeslagen. Geen installatie, geen account, geen cloud. Werkt op laptop, desktop, en de meeste tablets. Op mobiel werkt het maar de ervaring is geoptimaliseerd voor breder scherm.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Werkt het op mijn computer / besturingssysteem? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Het werkt in elke moderne browser: Chrome, Firefox, Safari, Edge. Werkt op Windows, macOS, Linux, iOS, Android. Je hebt niet eens internet nodig na de eerste download — alles draait lokaal.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Hoe veilig is mijn financiële data? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Je data wordt opgeslagen in localStorage van je browser — dus alleen op jouw apparaat, in jouw browser. Het wordt nooit verzonden naar een server. Ik kan letterlijk niet bij je data, want er is geen "ik" in de loop. De code is HTML/CSS/JS dat je in je browser kunt openen en inspecteren. Geen externe analytics, geen tracking pixels.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Wat als ik mijn browser leegmaak? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Dan ben je je data kwijt, tenzij je geëxporteerd hebt. Daarom is er een prominente Export-knop bovenaan. Aanbeveling: exporteer wekelijks (bij je vermogen-update) een JSON backup en bewaar die op een veilige plek. Bij een nieuwe browser of apparaat kun je die importeren.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Is dit financieel advies? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a"><strong>Nee.</strong> Dit is een educatieve tool en een calculator, geen advies. Ik heb geen Wft-vergunning. Voor beslissingen over jouw vermogen, hypotheek, of pensioen raadpleeg een gecertificeerd financieel adviseur. De berekeningen zijn vereenvoudigde modellen — voor je belastingaangifte gebruik de officiële Belastingdienst rekenhulpen.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Wat is het verschil met YNAB / Spendee / Mint? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Die zijn gebouwd voor budget-tracking en kennen het Nederlandse fiscale stelsel niet. Geen jaarruimte berekening, geen Box 3 forfait, geen pensioenoverzicht.nl integratie. Vermogensoverzicht is specifiek Nederlands en richt zich op vermogensplanning, niet alleen op budget. Ze zijn ook niet zelf-gehost — jouw data zit op hun servers.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Krijg ik updates? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Ja. Bij aankoop krijg je 12 maanden gratis updates: nieuwe versies via email, als de Belastingdienst regels wijzigen (Box 3 stelselherziening in 2027, jaarlijkse jaarruimte cijfers, etc.) of als ik features toevoeg. Na 12 maanden blijft je gekochte versie werken — alleen nieuwe updates zou je opnieuw kunnen bestellen.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Kan ik mijn geld terugkrijgen als het niet bevalt? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Ja. Binnen 14 dagen na aankoop, geen vragen. Stuur een email naar info@vermogensoverzicht.com en je krijgt het geld terug. Eerlijk: ik wil geen ongelukkige klanten, en jij wilt geen tool waar je niets aan hebt.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Werkt het voor zzp'ers en eenmanszaken? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Het kerngedeelte werkt, maar het is gebouwd vanuit het perspectief van een loondienst-huishouden. Voor zzp specifieke zaken (oudedagsreserve, zelfstandigenaftrek, MKB-winstvrijstelling) gebruik je beter een gespecialiseerde tool of accountant. De jaarruimte berekening werkt wel voor zzp, omdat factor A dan 0 is.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Wat als ik een fout vind in de berekeningen? <span class="faq-arrow">▶</span></div>
+      <div class="faq-a">Mail me op info@vermogensoverzicht.com met je bevinding. Ik corrigeer fouten zo snel mogelijk en stuur een update naar alle klanten. De berekeningen zijn bewust transparant (je ziet de formule, niet alleen het antwoord) zodat je zelf kunt verifiëren.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div class="container">
+  <div class="cta-final">
+    <h2>Klaar om grip te krijgen?</h2>
+    <p>Eénmalig €29. Voor altijd van jou. 14 dagen geld-terug-garantie.</p>
+    <a href="https://vermogensoverzicht.lemonsqueezy.com/buy/PLACEHOLDER" class="btn btn-primary btn-large">Koop Vermogensoverzicht</a>
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="container">
+  <div class="disclaimer-box">
+    <strong>Geen financieel advies.</strong> Vermogensoverzicht is een persoonlijk dashboard en educatieve tool, geen financieel advies. De maker heeft geen Wft-vergunning. Berekeningen zijn vereenvoudigde modellen — voor belastingaangifte gebruik de officiële Belastingdienst rekenhulpen. Voor beslissingen over jouw vermogen raadpleeg een gecertificeerd financieel adviseur.
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-text">
+        © 2026 Vermogensoverzicht · <a href="mailto:info@vermogensoverzicht.com">info@vermogensoverzicht.com</a>
+      </div>
+      <div class="footer-links">
+        <a href="#wat">Wat krijg je</a>
+        <a href="#voor-wie">Voor wie</a>
+        <a href="#prijs">Prijs</a>
+        <a href="mailto:info@vermogensoverzicht.com">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// FAQ toggle
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    q.parentElement.classList.toggle('open');
+  });
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if (href === '#') return;
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
